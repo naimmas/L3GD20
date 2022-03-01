@@ -5,7 +5,8 @@
  *      Author: ajanx
  */
 
-#define C_SIMULATION
+//#define C_SIMULATION
+#define DEBUG_EN
 #ifndef C_SIMULATION
 #include "stm32h7xx_hal.h"
 #endif
@@ -37,13 +38,14 @@
 #define L3GD20_GYRO_SENS_500DPS (0.0175F)  /*Sensitivity at 500 dps*/
 #define L3GD20_GYRO_SENS_2000DPS (0.070F)  /*Sensitivity at 2000 dps*/
 
+float L3GD20GyroSens;
 typedef struct {
     #ifndef C_SIMULATION
 	/* I2C handle */
 	I2C_HandleTypeDef *i2cHandle;
     #endif
 	/* Gyroscope data (X, Y, Z)*/
-	int16_t gyro[3];
+	double gyro[3];
 	/* Temperature data in deg */
 	int16_t temp_C;
 } L3GD20;
@@ -75,7 +77,7 @@ typedef enum{
 #define ODR760_CO50     ((uint8_t)(DR0|DR1|BW1))      /*OUTPUT DATA RATE 760 HZ - CUT-OFF FREQ 50   HZ*/
 #define ODR760_CO100    ((uint8_t)(DR0|DR1|BW0|BW1))  /*OUTPUT DATA RATE 760 HZ - CUT-OFF FREQ 100  HZ*/
 /*Enable gyro mesurement on x y z axes*/
-#define ENABLE_ALL_AXES     ((uint8_t)(Xen|Yen|Zen)
+#define ENABLE_ALL_AXES     ((uint8_t)(Xen|Yen|Zen))
 /*Power mode selection configuration*/
 #define POWER_DOWN_MODE     ((uint8_t)(0X00))
 #define POWER_NORMAL_MODE   ((uint8_t)(PD | ENABLE_ALL_AXES))
@@ -115,6 +117,7 @@ typedef enum{
 //************ REGISTER CTRL5 ************//
 #define HPF_EN  ((uint8_t)(0x10))
 
+#define DPS_TO_RADS	(0.017453293F)
 typedef enum {
 	REGISTER_WRITE_ERROR=0x00,
 	REGISTER_WRITE_OK=0x01,
@@ -122,12 +125,11 @@ typedef enum {
 	SENSOR_CONNECTION_OK=0x03
 } L3GD20_ErrorTypeDef;
 
-float L3GD20_SENS;
 
 #ifndef C_SIMULATION
 
 HAL_StatusTypeDef L3GD20_CheckDevice(L3GD20 *dev);
-LSM303_ErrorTypeDef L3GD20_Init(L3GD20 *dev, I2C_HandleTypeDef *i2cHandle, uint8_t* errHandling);
+L3GD20_ErrorTypeDef L3GD20_Init(L3GD20 *dev, I2C_HandleTypeDef *i2cHandle, uint8_t* errHandling);
 HAL_StatusTypeDef L3GD20_ReadGyro(L3GD20 *dev);
 HAL_StatusTypeDef L3GD20_ReadRegister(L3GD20 *dev, uint8_t reg, uint8_t *data);
 HAL_StatusTypeDef L3GD20_WriteRegister(L3GD20 *dev, uint8_t reg, uint8_t *data);
