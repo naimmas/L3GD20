@@ -2,7 +2,7 @@
 /*
  * L3GD20.c
  *
- *  Created on: Jan 16, 2022
+ *  Created on: Feb 25, 2022
  *      Author: ajanx
  */
 #include "L3GD20.h"
