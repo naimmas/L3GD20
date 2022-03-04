@@ -10,7 +10,12 @@
 #ifndef C_SIMULATION
 #include "stm32h7xx_hal.h"
 #endif
+#ifndef stdint
+#include <stdint.h>
+#endif
+#ifndef stdlib
 #include <stdlib.h>
+#endif
 
 #define L3GD20_WHO_AM_I        ((uint8_t)0X0F) /*DEFAULT   11010100*/
 #define L3GD20_CTRL_REG1       ((uint8_t)0X20) /*DEFAULT   00000111*/
