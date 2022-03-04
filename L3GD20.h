@@ -45,11 +45,9 @@ typedef struct {
 	I2C_HandleTypeDef *i2cHandle;
     #endif
 	/* Gyroscope data (X, Y, Z)*/
-<<<<<<< HEAD
-	float gyro[3];
-=======
+
 	double gyro[3];
->>>>>>> 5b5bc581b0e0f2daac43f60d50013e524c3bd62b
+
 	/* Temperature data in deg */
 	int16_t temp_C;
 } L3GD20;
