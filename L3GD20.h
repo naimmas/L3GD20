@@ -43,7 +43,7 @@ typedef struct {
 	I2C_HandleTypeDef *i2cHandle;
     #endif
 	/* Gyroscope data (X, Y, Z)*/
-	int16_t gyro[3];
+	float gyro[3];
 	/* Temperature data in deg */
 	int16_t temp_C;
 } L3GD20;
@@ -116,10 +116,10 @@ typedef enum{
 #define HPF_EN  ((uint8_t)(0x10))
 
 typedef enum {
-	REGISTER_WRITE_ERROR=0x00,
-	REGISTER_WRITE_OK=0x01,
-	SENSOR_CONNECTION_ERROR=0x02,
-	SENSOR_CONNECTION_OK=0x03
+	L3GD20_REGISTER_WRITE_ERROR=0x00,
+	L3GD20_REGISTER_WRITE_OK=0x01,
+	L3GD20_SENSOR_CONNECTION_ERROR=0x02,
+	L3GD20_SENSOR_CONNECTION_OK=0x03
 } L3GD20_ErrorTypeDef;
 
 float L3GD20_SENS;
