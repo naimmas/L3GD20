@@ -53,7 +53,7 @@ L3GD20_ErrorTypeDef L3GD20_Init(L3GD20 *dev, I2C_HandleTypeDef *i2cHandle)
 	#endif
 
 	#ifndef DEBUG_EN
-	return SENSOR_CONNECTION_OK;
+	return L3GD20_SENSOR_CONNECTION_OK;
 	#endif
 }
 
@@ -71,13 +71,38 @@ HAL_StatusTypeDef L3GD20_ReadGyro(L3GD20 *dev)
 		tempData[0] = (int16_t) (inComeData[1]<<8 | inComeData[0]);
 		tempData[1] = (int16_t) (inComeData[3]<<8 | inComeData[2]);
 		tempData[2] = (int16_t) (inComeData[5]<<8 | inComeData[4]);
-		dev->gyro[0]=(double) tempData[0] * L3GD20GyroSens * DPS_TO_RADS;
-		dev->gyro[1]=(double) tempData[1] * L3GD20GyroSens * DPS_TO_RADS;
-		dev->gyro[2]=(double) tempData[2] * L3GD20GyroSens * DPS_TO_RADS;
+		dev->gyroData[0]=(float)(tempData[0]) * L3GD20GyroSens * DPS_TO_RADS;
+		dev->gyroData[1]=(float)(tempData[1]) * L3GD20GyroSens * DPS_TO_RADS;
+		dev->gyroData[2]=(float)(tempData[2]) * L3GD20GyroSens * DPS_TO_RADS;
 	}
 	return state;
 }
 
+void CalGyro(L3GD20 *dev, int16_t ReadingDuration)
+{
+	uint32_t sum = 0;
+    uint8_t ReadingInterval = 5;    /*ms*/
+    uint32_t beginTime = HAL_GetTick();
+    while (HAL_GetTick() - beginTime < ReadingDuration)
+    {
+		L3GD20_ReadGyro(dev);
+		dev->gyroBias[0] += dev->gyroData[0];
+		dev->gyroBias[1] += dev->gyroData[1];
+		dev->gyroBias[2] += dev->gyroData[2];
+        sum++;
+		HAL_Delay(ReadingInterval);
+    }
+    dev->gyroBias[0] /= sum;
+    dev->gyroBias[1] /= sum;
+    dev->gyroBias[2] /= sum;
+}
+void ReadCalGyro(L3GD20 *dev)
+{
+	L3GD20_ReadGyro(dev);
+	dev->gyroData[0] -= dev->gyroBias[0];
+	dev->gyroData[1] -= dev->gyroBias[1];
+	dev->gyroData[2] -= dev->gyroBias[2];
+}
 HAL_StatusTypeDef L3GD20_ReadRegister(L3GD20 *dev, uint8_t reg, uint8_t *data) {
 	return HAL_I2C_Mem_Read(dev->i2cHandle, L3GD20_SA0H_R, reg, 1, data,
 			I2C_MEMADD_SIZE_8BIT, HAL_MAX_DELAY);

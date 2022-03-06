@@ -6,7 +6,7 @@
  */
 
 //#define C_SIMULATION
-#define DEBUG_EN
+//#define DEBUG_EN
 #ifndef C_SIMULATION
 #include "stm32h7xx_hal.h"
 #endif
@@ -51,8 +51,8 @@ typedef struct {
     #endif
 	/* Gyroscope data (X, Y, Z)*/
 
-	double gyro[3];
-
+	float gyroData[3];
+	float gyroBias[3];
 	/* Temperature data in deg */
 	int16_t temp_C;
 } L3GD20;
@@ -136,9 +136,15 @@ typedef enum {
 #ifndef C_SIMULATION
 
 HAL_StatusTypeDef L3GD20_CheckDevice(L3GD20 *dev);
+#ifdef DEBUG_EN
 L3GD20_ErrorTypeDef L3GD20_Init(L3GD20 *dev, I2C_HandleTypeDef *i2cHandle, uint8_t* errHandling);
+#else
+L3GD20_ErrorTypeDef L3GD20_Init(L3GD20 *dev, I2C_HandleTypeDef *i2cHandle);
+#endif
 HAL_StatusTypeDef L3GD20_ReadGyro(L3GD20 *dev);
 HAL_StatusTypeDef L3GD20_ReadRegister(L3GD20 *dev, uint8_t reg, uint8_t *data);
 HAL_StatusTypeDef L3GD20_WriteRegister(L3GD20 *dev, uint8_t reg, uint8_t *data);
 
+void CalGyro(L3GD20 *dev, int16_t ReadingDuration);
+void ReadCalGyro(L3GD20 *dev);
 #endif
